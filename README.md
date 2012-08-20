@@ -1,4 +1,4 @@
 dreskt
 ======
 
-Student management software
+Student management software 0.0.1
