@@ -8,12 +8,26 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'Ethnicity'
+        db.create_table('students_ethnicity', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('code', self.gf('django.db.models.fields.CharField')(max_length=2)),
+        ))
+        db.send_create_signal('students', ['Ethnicity'])
+
         # Adding model 'Student'
         db.create_table('students_student', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('birthday', self.gf('django.db.models.fields.DateTimeField')()),
+            ('gender', self.gf('django.db.models.fields.CharField')(default='MA', max_length=2)),
+            ('ethnicity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['students.Ethnicity'])),
             ('phone', self.gf('django.db.models.fields.CharField')(max_length=20)),
             ('address', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('comments', self.gf('django.db.models.fields.CharField')(max_length=300)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=254)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, blank=True)),
         ))
         db.send_create_signal('students', ['Student'])
 
@@ -34,6 +48,9 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
+        # Deleting model 'Ethnicity'
+        db.delete_table('students_ethnicity')
+
         # Deleting model 'Student'
         db.delete_table('students_student')
 
@@ -49,14 +66,26 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Course'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'students': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['students.Student']", 'symmetrical': 'False'})
+            'students': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'courses'", 'symmetrical': 'False', 'to': "orm['students.Student']"})
+        },
+        'students.ethnicity': {
+            'Meta': {'object_name': 'Ethnicity'},
+            'code': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'students.student': {
             'Meta': {'object_name': 'Student'},
             'address': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'birthday': ('django.db.models.fields.DateTimeField', [], {}),
+            'comments': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '254'}),
+            'ethnicity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['students.Ethnicity']"}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "'MA'", 'max_length': '2'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '20'})
+            'phone': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'})
         }
     }
 

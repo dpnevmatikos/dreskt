@@ -21,8 +21,13 @@ class Student(models.Model):
                              default="MA")
     ethnicity = models.ForeignKey(Ethnicity)
     phone = models.CharField(max_length=20)
+    cell_phone = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
-    slug = models.SlugField(blank=True)
+    zipcode = models.CharField(max_length=10)
+    city = models.CharField(max_length=50)
+    comments = models.TextField(max_length=300)
+    email = models.EmailField(max_length=254)
+    slug = models.SlugField(blank=True,editable=False)
 
     def save(self,*args,**kwargs):
         if not self.slug:
