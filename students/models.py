@@ -1,5 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from datetime import datetime
 
 
 class Ethnicity(models.Model):
@@ -45,5 +46,24 @@ class Course(models.Model):
     
     def __unicode__(self):
         return self.name
+
+class Notification(models.Model):
+    text = models.TextField(max_length=500)
+    subject = models.CharField(max_length=40)
+    date_created = models.DateTimeField('Created',default=datetime.now())
+    expiration_date = models.DateTimeField('Expires')
+
+    def __unicode__(self):
+        return self.subject
+
+class Grade(models.Model):
+    grade = models.IntegerField(help_text="please select a value between 1-10")
+    student = models.ForeignKey(Student,related_name="student")
+    course = models.ForeignKey(Course,related_name="course")
+
+    def __unicode__(self):
+        return "Student:"+self.student.name+" grade:"+str(self.grade)+" @course:"+self.course.name 
+
+
 
 
