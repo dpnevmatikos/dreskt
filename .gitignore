@@ -1,3 +1,7 @@
 *.db
 *.pyc
 *.txt
+*.swp
+/students/migrations/
+.project
+.pydevproject

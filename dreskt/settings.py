@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'south',
     'students',
     'django_extensions',
+    'tastypie',
 )
 
 # A sample logging configuration. The only tangible logging
