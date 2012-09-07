@@ -29,6 +29,7 @@ class Student(models.Model):
     comments = models.TextField(blank=True,max_length=300)
     email = models.EmailField(max_length=254)
     slug = models.SlugField(blank=True,editable=False)
+    password = models.CharField(max_length=20)
 
     def save(self,*args,**kwargs):
         if not self.slug:
@@ -47,6 +48,7 @@ class Course(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Notification(models.Model):
     text = models.TextField(max_length=500)
     subject = models.CharField(max_length=40)
@@ -56,14 +58,23 @@ class Notification(models.Model):
     def __unicode__(self):
         return self.subject
 
+
 class Grade(models.Model):
     grade = models.IntegerField(help_text="please select a value between 1-10")
-    student = models.ForeignKey(Student,related_name="student")
+    student = models.ForeignKey(Student,related_name="grade_student")
     course = models.ForeignKey(Course,related_name="course")
 
     def __unicode__(self):
         return "Student:"+self.student.name+" grade:"+str(self.grade)+" @course:"+self.course.name 
 
 
+class Document(models.Model):
+    code = models.CharField(max_length=2,unique=True)
+    description = models.CharField(max_length=50)
+    student = models.ForeignKey(Student,related_name="document_student")
+    finished_processing = models.BooleanField(verbose_name="Closed")
+
+    def __unicode__(self):
+        return self.code + " for " + self.student
 
 

@@ -13,6 +13,8 @@ class NotificationResource(ModelResource):
         return bundle.data['text']
     '''
     def alter_list_data_to_serialize(self,request,data_dict):
+        print "----------------"
+        print request.META["HTTP_USER"]
         if isinstance(data_dict, dict):
             if 'meta' in data_dict:
                 # Get rid of the "meta".
