@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import Group,User
 from django.template.defaultfilters import slugify
 from datetime import datetime
 
@@ -27,13 +28,22 @@ class Student(models.Model):
     zipcode = models.CharField(max_length=10)
     city = models.CharField(max_length=50)
     comments = models.TextField(blank=True,max_length=300)
-    email = models.EmailField(max_length=254)
+    email = models.EmailField(max_length=254,unique=True)
     slug = models.SlugField(blank=True,editable=False)
     password = models.CharField(max_length=20)
 
     def save(self,*args,**kwargs):
         if not self.slug:
             self.slug = slugify(self.name)[:50]
+
+        #Get students group
+        student_group = Group.objects.get(name__startswith="students")
+        
+        #Create a new user where username = Student.email
+        new_user = User.objects.create_user(self.email,self.email)
+        new_user.set_password(self.password)
+        new_user.groups.add(student_group)
+        new_user.save()
 
         return super(Student, self).save(*args, **kwargs)
 
@@ -71,10 +81,23 @@ class Grade(models.Model):
 class Document(models.Model):
     code = models.CharField(max_length=2,unique=True)
     description = models.CharField(max_length=50)
-    student = models.ForeignKey(Student,related_name="document_student")
-    finished_processing = models.BooleanField(verbose_name="Closed")
 
     def __unicode__(self):
-        return self.code + " for " + self.student
+        return self.code + ":" + self.description
 
+
+class DocumentEnquiry(models.Model):
+    PROCESS_STATUS = (
+        ("NE","New enquiry"),
+        ("SB","Submitted for processing"),
+        ("RE","Application Rejected"),
+        ("CL","Closed"),
+    )
+    status = models.CharField(max_length=2,choices=PROCESS_STATUS ,
+                             default="NE")
+    document = models.ForeignKey(Document,related_name="document_type")
+    student = models.ForeignKey(Student,related_name="document_student")
+
+    def __unicode__(self):
+        return self.document.description + " for " + self.student.name
 
