@@ -35,15 +35,14 @@ class Student(models.Model):
     def save(self,*args,**kwargs):
         if not self.slug:
             self.slug = slugify(self.name)[:50]
-
-        #Get students group
-        student_group = Group.objects.get(name__startswith="students")
         
-        #Create a new user where username = Student.email
-        new_user = User.objects.create_user(self.email,self.email)
-        new_user.set_password(self.password)
-        new_user.groups.add(student_group)
-        new_user.save()
+        new_user, created = User.objects.get_or_create(email=self.email)
+        if created:
+            student_group = Group.objects.get(name__startswith="students")
+            new_user.set_password(self.password)
+            new_user.username = self.email
+            new_user.groups.add(student_group)
+            new_user.save()
 
         return super(Student, self).save(*args, **kwargs)
 
@@ -73,6 +72,9 @@ class Grade(models.Model):
     grade = models.IntegerField(help_text="please select a value between 1-10")
     student = models.ForeignKey(Student,related_name="grade_student")
     course = models.ForeignKey(Course,related_name="course")
+    
+    class Meta:
+        unique_together=(('course','student'),)
 
     def __unicode__(self):
         return "Student:"+self.student.name+" grade:"+str(self.grade)+" @course:"+self.course.name 
@@ -100,4 +102,6 @@ class DocumentEnquiry(models.Model):
 
     def __unicode__(self):
         return self.document.description + " for " + self.student.name
+
+
 
