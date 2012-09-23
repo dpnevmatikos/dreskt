@@ -5,3 +5,5 @@
 /students/migrations/
 .project
 .pydevproject
+*.html~
+*.py~
