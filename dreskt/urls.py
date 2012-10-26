@@ -27,4 +27,6 @@ urlpatterns = patterns('',
     #url(r'^api/', include(document_enquiries_resource.urls)),
     url(r'^api/', include(v1_api.urls)),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^students/(?P<student_id>\d+)/$', 'students.views.detail'),
+
 )
